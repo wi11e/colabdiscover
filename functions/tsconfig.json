@@ -5,6 +5,7 @@
     "noImplicitReturns": true,
     "outDir": "lib",
     "sourceMap": true,
+    "moduleResolution": "node",
     "target": "es2017"
   },
   "compileOnSave": true,
