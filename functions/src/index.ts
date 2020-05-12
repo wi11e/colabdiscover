@@ -5,6 +5,7 @@ import * as functions from 'firebase-functions'
 // import * as admin from 'firebase-admin'
 import axios from 'axios';
 import * as  qs from 'querystring';
+import { SECRETS } from './secrets';
 
 export const helloWorld = functions.https.onRequest((req, res) => {
  res.send('Hello from Firebase!\n\n');
@@ -14,11 +15,10 @@ export const helloWorld = functions.https.onRequest((req, res) => {
 // TODO put under '/' route
 export const login = functions.https.onRequest((req, res) => {
  const scopes = 'user-read-private user-read-email user-top-read'; // TODO increase scopes
- const clientId = 'f113a4afacf74665b6744b7406947cf8';
  const redirectUri = 'https://us-central1-colabdiscover.cloudfunctions.net/getTopTracks';
  res.redirect('https://accounts.spotify.com/authorize' +
    '?response_type=code' +
-   '&client_id=' + clientId +
+   '&client_id=' + SECRETS.client_id +
    (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
    '&redirect_uri=' + encodeURIComponent(redirectUri))
  // TODO add state
@@ -56,8 +56,8 @@ type TrackResponse =  any; // TODO;
   };
   const config = {
    auth: {
-    username: 'f113a4afacf74665b6744b7406947cf8',
-    password: '515fe95c0f2f47a8bc033fc37737f184'
+    username: SECRETS.client_id,
+    password: SECRETS.client_secret
    },
    headers: {
     'Content-Type': 'application/x-www-form-urlencoded'
