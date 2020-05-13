@@ -18,8 +18,21 @@ export type Track = {
   name: string;
   album: Album;
   artists: Artist[];
+  uri: string
 }
 
-export type Album = TODO;
-export type Artist = TODO;
+export type Artist = {
+  name: string;
+}
 
+export type Album = {
+  name: string
+};
+
+export type User = {
+  id: string;
+  uri: string;
+  country: string;
+  display_name: string;
+  email: string;
+};
