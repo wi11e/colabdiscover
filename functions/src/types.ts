@@ -8,10 +8,16 @@ export interface AuthResponse {
   refresh_token: string;
 }
 
-export type TrackResponse =  {
-  data: {
+export type TrackList =  {
     items: Track[]
-  }
+};
+
+export type Playlist = {
+  id: string,
+  name: string;
+  description: string;
+  href: string;
+  owner: User;
 };
 
 export type Track = {
@@ -26,13 +32,19 @@ export type Artist = {
 }
 
 export type Album = {
-  name: string
+  name: string;
 };
 
 export type User = {
+  spotifyId: string;
+  name: string;
+  refreshToken: string;
+}
+
+export type SpotifyUser = {
   id: string;
   uri: string;
-  country: string;
   display_name: string;
-  email: string;
+  email?: string;
+  country?: string;
 };
