@@ -1,66 +1,27 @@
-## Cloud Functions for Firebase: getting started with TypeScript
+# Frontend
 
-This is an example Firebase project for using
-[TypeScript](https://www.typescriptlang.org/) with
-[Cloud Functions for Firebase](https://firebase.google.com/products/functions).
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.6.
 
-### Why TypeScript?
+## Development server
 
-[TypeScript](https://www.typescriptlang.org/) is a typed superset of JavaScript that compiles to plain JavaScript.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-One of the biggest challenges with developing in JavaScript is that it is very easy to write code that has runtime errors. TypeScript enables the fast development of JavaScript with optional types. When types are used, supported editors provide auto-suggest for methods and properties along with syntax highlighting of errors, which speeds development.
+## Code scaffolding
 
-TypeScript supports targeting different browsers or node.js versions, and optimizes the resulting JavaScript. It is much easier to write clean, consistent code across a project and development team.  TypeScript offers support for the latest and evolving JavaScript features like async functions and decorators, to help build robust components.
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-For a nice intro to TypeScript, check out the [TypeScript PlayGround](https://www.typescriptlang.org/play/index.html).
+## Build
 
-### What is different about TypeScript in this example?
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-The TypeScript source is in `functions/src` and these files need to be compiled before deploying (see steps below). The main Cloud Function entry point is `src/index.ts` and is compiled to `lib/index.js` which is the entry point specified in `functions/package.json`.
+## Running unit tests
 
-There are two key differences between a basic example Cloud Function in Typescript and one in EcmaScript 2015 (which is supported natively in Cloud Functions):
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-* `require` -> `import`
-* `exports.` -> `export const`
+## Running end-to-end tests
 
-JavaScript:
-```js
-const functions = require('firebase-functions');
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
- response.send('Hello from Firebase!\n\n');
-});
-```
+## Further help
 
-TypeScript:
-```js
-import * as functions from 'firebase-functions';
-
-export const helloWorld = functions.https.onRequest((request, response) => {
- response.send('Hello from Firebase!\n\n');
-});
-```
-
-
-### Project Setup
-
-This example has the default sample function. To use this example as a starter project:
-
-1. `npm install -g firebase-tools`
-3. Create a Firebase Project using the Firebase Developer Console
-2. Download the source code of this sample: `git clone https://github.com/firebase/functions-samples`
-4. Enter the right sample directory: `cd functions-samples/typescript-getting-started`
-5. Configure this project to use the Firebase project you have created: `firebase use --add` and select your project in the list.
-6. Install the dependencies and deploy
-   ```
-   cd functions
-   npm install
-   npm run deploy
-   ```
-
-> With TypeScript you need to build the JavaScript files before deploying, so an npm script does this steps.  You can see this script and a few other handy shortcuts in [package.json](functions/package.json). Also a pre-deploy trigger ensures that the code is always transpiled before deploying. You can see this in [firebase.json](firebase.json).
-
-After the deploy is complete, you will see the output by sending a request to the URL of your Cloud Function endpoint. You can test the function with curl.  The following command will work with any project, since the output of `firebase use` is the current project ID:
-```
-curl https://us-central1-$(firebase use).cloudfunctions.net/helloWorld
-```
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
