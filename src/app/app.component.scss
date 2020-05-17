@@ -12,15 +12,25 @@ html {
   text-transform: uppercase;
 }
 
+header {
+  text-align: center;
+}
+
 body {
   margin: auto;
   max-width:660px;
   height: auto !important;
   padding: 1rem;
   padding-bottom: 700px !important;
+  line-height: 2;
 }
 
 h1 {
   font-family: $title-font;
+  letter-spacing: .1em;
+}
+
+p {
+  letter-spacing: .4em;
 }
 
