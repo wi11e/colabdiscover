@@ -21,7 +21,6 @@ body {
   max-width:660px;
   height: auto !important;
   padding: 1rem;
-  padding-bottom: 700px !important;
   line-height: 2;
 }
 
@@ -34,3 +33,11 @@ p {
   letter-spacing: .4em;
 }
 
+#github {
+  position: absolute;
+  height: 1.5em;
+  width: 1.5em;
+  right: 0;
+  bottom: 0;
+  padding: 0.5em;
+}
