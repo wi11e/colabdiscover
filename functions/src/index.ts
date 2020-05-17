@@ -6,11 +6,13 @@ import axios, {AxiosResponse} from 'axios';
 import * as  qs from 'querystring';
 import { SECRETS } from './secrets';
 import {AuthResponse, Playlist, SpotifyUser, Track, TrackList, User} from "./types";
+import * as cors from 'cors';
 
-const firebaseUrl = 'https://us-central1-colabdiscover.cloudfunctions.net';
+const FIREBASE_URL = 'https://us-central1-colabdiscover.cloudfunctions.net';
 const SCOPES = 'user-read-private user-read-email user-top-read playlist-modify-public user-follow-modify playlist-modify-public playlist-modify-private';
 
 const ax = axios.create();
+const corsHandler = cors({origin: true});
 
 ax.interceptors.request.use(request => {
  console.log('Request', request);
@@ -25,19 +27,22 @@ admin.initializeApp();
 const db = admin.firestore();
 
 /*
- * TODO: pull log in out of each function (probably requires a frontend)
  * TODO: create new colab: playlist artwork?
- * TODO: add tracks to colab: throw exception if playlist id does not exist
+ * TODO: update playlist description with each new colabers name.
+ * TODO: add tracks to colab: throw exception if playlist id does not exist (also handle this on fe)
  */
 
 /*
  * CLOUD FUNCTIONS
  */
+export const login = functions.https.onRequest(async (req, res) => {
+  await spotifyLogin(res, 'https://colabdiscover.web.app/join')
+});
+
 export const createNewColab = functions.https.onRequest(async (req, res) => {
-  const url = firebaseUrl + '/createNewColab';
-  if (!req.query.code) {
-    return login(res, url);
-  }
+  corsHandler(req, res, () => {console.log('cors')});
+
+  const url = FIREBASE_URL + '/createNewColab';
   const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, url);
 
   const userSpotify = await getUser(accessToken);
@@ -57,13 +62,12 @@ export const createNewColab = functions.https.onRequest(async (req, res) => {
 });
 
 export const addTracksToColab = functions.https.onRequest(async (req, res) => {
-  const url = firebaseUrl + '/addTracksToColab';
-  const playlistId =  '5vF1MebmHUBaCBWyIecbZf'; // req.query.playlist as string; // TODO: improve login flow to enable playlist param
-  if (!req.query.code) {
-    await login(res, url);
-    return;
-  }
-  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, url);
+  corsHandler(req, res, () => {console.log('cors')});
+
+  const url = 'https://colabdiscover.web.app/join';
+  const playlistId = req.query.playlist as string;
+
+  const { accessToken, refreshToken } = await authorizeUser(req.query.code as string, url);
   const userSpotify = await getUser(accessToken);
   const user: User = {
     spotifyId: userSpotify.id,
@@ -91,11 +95,10 @@ export const addTracksToColab = functions.https.onRequest(async (req, res) => {
 
 export const syncPlaylistToDb = functions.firestore.document('playlist/{playlistId}').onUpdate(async (snap, context) => {
   const {playlistId, owner, tracks, users} = snap.after.data();
-  if (tracks.every((track) => snap.before.data().tracks.includes(track))) {
-    return;
-  }
+  const tracksAlreadyOnPlaylist = snap.before.data().tracks;
+  const newTracks = tracks.filter((track: Track) => !tracksAlreadyOnPlaylist.includes(track));
   const accessToken = await refreshUserToken(owner.refreshToken);
-  await addTracksToPlaylist(playlistId, tracks, accessToken);
+  await addTracksToPlaylist(playlistId, newTracks, accessToken);
 });
 
 /*
@@ -178,7 +181,7 @@ async function addTracksToPlaylist(playlistId: string, tracks: Track[], accessTo
   );
 }
 
-async function login(res, redirectUrl: string): Promise<void> {
+async function spotifyLogin(res, redirectUrl: string): Promise<void> {
   const params = {
     response_type: 'code',
     client_id: SECRETS.client_id,

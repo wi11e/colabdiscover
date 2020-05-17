@@ -1,0 +1,26 @@
+@import 'https://fonts.googleapis.com/css?family=Bungee+Shade';
+@import 'https://fonts.googleapis.com/css?family=Bungee+Inline';
+$background: #ffffff;
+$font-color: #000000;
+$title-font: 'Bungee Shade', sans-serif;
+$font: 'Bungee Inline', sans-serif;
+
+html {
+  background: $background;
+  font-family: $font;
+  color: $font-color;
+  text-transform: uppercase;
+}
+
+body {
+  margin: auto;
+  max-width:660px;
+  height: auto !important;
+  padding: 1rem;
+  padding-bottom: 700px !important;
+}
+
+h1 {
+  font-family: $title-font;
+}
+

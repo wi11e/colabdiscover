@@ -6,8 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'frontend';
-  constructor() {
-    console.log('booted');
-  }
+  title = 'colab discover';
 }
