@@ -97,6 +97,9 @@ export const syncPlaylistToDb = functions.firestore.document('playlist/{playlist
   const {playlistId, owner, tracks, users} = snap.after.data();
   const tracksAlreadyOnPlaylist = snap.before.data().tracks;
   const newTracks = tracks.filter((track: Track) => !tracksAlreadyOnPlaylist.includes(track));
+  if (newTracks.length < 1) {
+    return;
+  }
   const accessToken = await refreshUserToken(owner.refreshToken);
   await addTracksToPlaylist(playlistId, newTracks, accessToken);
 });
