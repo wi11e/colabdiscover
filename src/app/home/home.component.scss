@@ -1,0 +1,32 @@
+$length: 8vh;
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  justify-content: center;
+  max-height: $length;
+}
+
+.square {
+  display: flex;
+  height: $length;
+  width: $length;
+  margin: 0.1rem;
+}
+
+.square:nth-child(4n) {
+  background: #F47C7C;
+}
+
+.square:nth-child(4n+1) {
+  background: #F7F48B;
+}
+
+.square:nth-child(4n+2) {
+  background: #70A1D7;
+}
+
+.square:nth-child(4n+3) {
+  background: #A1DE93;
+}
