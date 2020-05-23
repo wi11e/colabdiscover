@@ -5,7 +5,7 @@ import  {ApiService } from '../api.service';
 @Component({
   selector: 'app-share-playlist',
   templateUrl: './share-playlist.component.html',
-  styleUrls: ['./share-playlist.component.scss']
+  styleUrls: ['../app.component.scss']
 })
 export class SharePlaylistComponent implements OnInit {
 
@@ -24,7 +24,7 @@ export class SharePlaylistComponent implements OnInit {
   }
 
   public join(): void {
-    this.api.goExternal('https://us-central1-colabdiscover.cloudfunctions.net/login');
+    this.api.goExternalWithSpotifyLogin('https://colabdiscover.web.app/join');
   }
 
 }

@@ -6,12 +6,16 @@ import { AppComponent } from './app.component';
 import { JoinPlaylistComponent } from './join-playlist/join-playlist.component';
 import { SharePlaylistComponent } from './share-playlist/share-playlist.component';
 import { HttpClientModule } from '@angular/common/http';
+import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     JoinPlaylistComponent,
     SharePlaylistComponent,
+    CreatePlaylistComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

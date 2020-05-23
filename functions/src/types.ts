@@ -24,7 +24,11 @@ export type Track = {
   name: string;
   album: Album;
   artists: Artist[];
-  uri: string
+  uri: string,
+}
+
+export type SpotifyImageRef = {
+  url: string
 }
 
 export type Artist = {
@@ -33,6 +37,7 @@ export type Artist = {
 
 export type Album = {
   name: string;
+  images: SpotifyImageRef[]
 };
 
 export type User = {

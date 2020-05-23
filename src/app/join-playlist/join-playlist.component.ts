@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute } from '@angular/router';
-import {ApiService} from "../api.service";
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-join-playlist',
   templateUrl: './join-playlist.component.html',
-  styleUrls: ['./join-playlist.component.scss']
+  styleUrls: ['../app.component.scss']
 })
 export class JoinPlaylistComponent implements OnInit {
 
@@ -23,9 +23,7 @@ export class JoinPlaylistComponent implements OnInit {
     this.route.queryParamMap.subscribe(queryParams => {
       this.spotifyOAuthCode = queryParams.get('code');
     });
-    this.api.joinPlaylist(this.playlistId, this.spotifyOAuthCode).subscribe((res) => {
-      console.log(res);
-    });
+    this.api.joinPlaylist(this.playlistId, this.spotifyOAuthCode);
   }
 
 }

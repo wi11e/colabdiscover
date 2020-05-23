@@ -36,28 +36,39 @@ const db = admin.firestore();
  * CLOUD FUNCTIONS
  */
 export const login = functions.https.onRequest(async (req, res) => {
-  await spotifyLogin(res, 'https://colabdiscover.web.app/join')
+  await spotifyLogin(res, req.query.url as string)
+});
+
+export const getUserTracks = functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, () => {console.log('cors')});
+
+  // PUT THIS IN A GUARD
+  const url = 'https://colabdiscover.web.app';
+
+  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, url);
+
+  const tracks = await getTracks(accessToken);
+
+  res.send(tracks);
 });
 
 export const createNewColab = functions.https.onRequest(async (req, res) => {
   corsHandler(req, res, () => {console.log('cors')});
 
-  const url = FIREBASE_URL + '/createNewColab';
-  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, url);
+  const url = 'https://colabdiscover.web.app/create';
 
+  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, url);
   const userSpotify = await getUser(accessToken);
-  const user: User = {
-     spotifyId: userSpotify.id,
-     name: userSpotify.display_name,
-     refreshToken: refreshToken,
-  };
-  const playlist = await createPlaylist(user.spotifyId, accessToken);
-  await db.collection('playlist').add({
-    playlistId: playlist.id,
-    owner: user,
-    users: [user],
-    tracks: [],
+  const playlist = await createPlaylist(userSpotify.id, userSpotify.display_name, accessToken);
+
+  await createPlaylistRecord(playlist.id, {
+    spotifyId: userSpotify.id,
+    name: userSpotify.display_name,
+    refreshToken: refreshToken,
   });
+  const tracks = await getTracks(accessToken);
+  await addTracksToPlaylistRecord(playlist.id, tracks.slice(0, 2));
+
   res.send(playlist);
 });
 
@@ -132,17 +143,17 @@ async function getTracks(accessToken: string): Promise<Track[]> {
   return tracksResponse.data.items;
 }
 
-async function createPlaylist(userId: string, accessToken: string): Promise<Playlist> {
+async function createPlaylist(userId: string, userName: string, accessToken: string): Promise<Playlist> {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + accessToken,
+      'Authorization': `Bearer ${accessToken}`,
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     }
   };
   const params = {
     name: "Colab Discover",
-    description: "New playlist description",
+    description: `colab discover playlist created by ${userName}`,
     public: true,
   };
   const response: AxiosResponse<Playlist> = await ax.post(
@@ -249,6 +260,15 @@ async function authorizeUser(code: string, redirectUrl: string): Promise<{access
 /*
  * FIRESTORE FUNCTIONS
  */
+async function createPlaylistRecord(playlistId: string, user: User): Promise<void> {
+  db.collection('playlist').add({
+    playlistId,
+    owner: user,
+    users: [user],
+    tracks: [],
+  });
+}
+
 async function addUserToPlaylistRecord(playlistId: string, user: User): Promise<void> {
   const playlistDocument = (await db.collection('playlist').where('playlistId', '==', playlistId).get()).docs[0];
   const currentUsers = playlistDocument.data().users;
