@@ -14,35 +14,44 @@ interface JoinPlaylistResponse {
 })
 export class ApiService {
 
+  private baseUrl = 'https://us-central1-colabdiscover.cloudfunctions.net';
+
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private http: HttpClient,
   ) {}
 
 
-  joinPlaylist(playlistId: string, code: string) {
-    return this.http.get('https://us-central1-colabdiscover.cloudfunctions.net/addTracksToColab', {
-      params: {playlist: playlistId, code}
+  public joinPlaylist(playlistId: string, code: string) {
+    return this.http.get(`${this.baseUrl}/addTracksToColab`, {
+      params: { playlist: playlistId, code }
     });
   }
 
-  createPlaylist(code: string) {
-    return this.http.get('https://us-central1-colabdiscover.cloudfunctions.net/createNewColab', {
+  public createPlaylist(code: string) {
+    return this.http.get(`${this.baseUrl}/createNewColab`, {
       params: { code }
     });
   }
 
-  getUserTracks(code: string) {
-    return this.http.get('https://us-central1-colabdiscover.cloudfunctions.net/getUserTracks', {
-      params: { code }
+  public getUserTracks(): Observable<Track[]> {
+    const token = localStorage.getItem('token');
+    return this.http.get(`${this.baseUrl}/getUserTracks`, {
+      params: { token }
     }) as Observable<Track[]>;
   }
 
-  goExternalWithSpotifyLogin(href: string) {
-    this.goExternal(`https://us-central1-colabdiscover.cloudfunctions.net/login?url=${encodeURI(href)}`);
+  public getAccessToken(code: string, url: string): Observable<string> {
+    return this.http.get(`${this.baseUrl}/getAccessToken`, {
+      params: { code, url }
+    }) as Observable<string>;
   }
 
-  goExternal(href: string): void {
+  public goExternalWithSpotifyLogin(href: string) {
+    this.goExternal(`${this.baseUrl}/login?url=${encodeURI(href)}`);
+  }
+
+  public goExternal(href: string): void {
     this.document.location.href = href;
   }
 }

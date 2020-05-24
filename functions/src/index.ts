@@ -39,15 +39,19 @@ export const login = functions.https.onRequest(async (req, res) => {
   await spotifyLogin(res, req.query.url as string)
 });
 
+export const getAccessToken =  functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, () => {console.log('cors')});
+  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, req.query.url as string);
+  res.send({
+    token: accessToken,
+    refreshToken,
+  })
+});
+
 export const getUserTracks = functions.https.onRequest(async (req, res) => {
   corsHandler(req, res, () => {console.log('cors')});
 
-  // PUT THIS IN A GUARD
-  const url = 'https://colabdiscover.web.app';
-
-  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, url);
-
-  const tracks = await getTracks(accessToken);
+  const tracks = await getTracks(req.query.token as string);
 
   res.send(tracks);
 });

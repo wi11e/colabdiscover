@@ -8,6 +8,8 @@ import { SharePlaylistComponent } from './share-playlist/share-playlist.componen
 import { HttpClientModule } from '@angular/common/http';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { HomeComponent } from './home/home.component';
+import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 @NgModule({
   declarations: [
@@ -20,9 +22,12 @@ import { HomeComponent } from './home/home.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    AuthGuard,
+    AuthService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

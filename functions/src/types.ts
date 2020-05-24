@@ -1,4 +1,4 @@
-type TODO = any;
+export type TODO = any;
 
 export interface AuthResponse {
   access_token: string;
