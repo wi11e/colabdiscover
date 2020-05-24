@@ -15,6 +15,11 @@ $length: 8vh;
   margin: 0.1rem;
 }
 
+img {
+  height: 100%;
+  width: 100%;
+}
+
 .square:nth-child(4n) {
   background: #F47C7C;
 }

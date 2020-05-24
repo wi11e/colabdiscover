@@ -7,7 +7,7 @@ import { JoinPlaylistComponent } from './join-playlist/join-playlist.component';
 import { SharePlaylistComponent } from './share-playlist/share-playlist.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
-import { HomeComponent } from './home/home.component';
+import { ArtworkBannerComponent } from './artwork-banner/artwork-banner.component';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
@@ -17,7 +17,7 @@ import { AuthService } from './auth.service';
     JoinPlaylistComponent,
     SharePlaylistComponent,
     CreatePlaylistComponent,
-    HomeComponent,
+    ArtworkBannerComponent,
   ],
   imports: [
     BrowserModule,
