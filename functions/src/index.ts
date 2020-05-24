@@ -27,7 +27,7 @@ admin.initializeApp();
 const db = admin.firestore();
 
 /*
- * TODO: create new colab: playlist artwork?
+ * TODO: playlist artwork?
  * TODO: update playlist description with each new colabers name.
  * TODO: add tracks to colab: throw exception if playlist id does not exist (also handle this on fe)
  */
@@ -41,10 +41,20 @@ export const login = functions.https.onRequest(async (req, res) => {
 
 export const getAccessToken =  functions.https.onRequest(async (req, res) => {
   corsHandler(req, res, () => {console.log('cors')});
-  const {accessToken, refreshToken} = await authorizeUser(req.query.code as string, req.query.url as string);
+  const { accessToken, refreshToken, expires } = await authorizeUser(req.query.code as string, req.query.url as string);
   res.send({
     token: accessToken,
     refreshToken,
+    expires
+  })
+});
+
+export const refreshAccessToken =  functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, () => {console.log('cors')});
+  const {accessToken, expires} = await refreshUserToken(req.query.refreshToken as string);
+  res.send({
+    token: accessToken,
+    expires,
   })
 });
 
@@ -115,7 +125,7 @@ export const syncPlaylistToDb = functions.firestore.document('playlist/{playlist
   if (newTracks.length < 1) {
     return;
   }
-  const accessToken = await refreshUserToken(owner.refreshToken);
+  const { accessToken } = await refreshUserToken(owner.refreshToken);
   await addTracksToPlaylist(playlistId, newTracks, accessToken);
 });
 
@@ -139,7 +149,7 @@ async function getTracks(accessToken: string): Promise<Track[]> {
       'Content-Type': 'application/json'
     },
     params: {
-      limit: 20,
+      limit: 50,
       offset: 0,
       time_range: 'short_term'
     }
@@ -210,7 +220,10 @@ async function spotifyLogin(res, redirectUrl: string): Promise<void> {
   res.redirect('https://accounts.spotify.com/authorize?' + qs.stringify(params))
 }
 
-async function refreshUserToken(refreshToken: string): Promise<string> {
+async function refreshUserToken(refreshToken: string): Promise<{
+  accessToken: string,
+  expires: string,
+}> {
   const params = {
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
@@ -230,10 +243,17 @@ async function refreshUserToken(refreshToken: string): Promise<string> {
     qs.stringify(params),
     config,
   );
-  return authResponse.data.access_token;
+  return {
+    accessToken: authResponse.data.access_token,
+    expires: getExpiryISOString(authResponse.data.expires_in),
+  };
 }
 
-async function authorizeUser(code: string, redirectUrl: string): Promise<{accessToken: string, refreshToken: string}> {
+async function authorizeUser(code: string, redirectUrl: string): Promise<{
+  accessToken: string,
+  refreshToken: string,
+  expires: string,
+}> {
   const params = {
     grant_type: 'authorization_code',
     code,
@@ -258,6 +278,7 @@ async function authorizeUser(code: string, redirectUrl: string): Promise<{access
   return {
     accessToken: authResponse.data.access_token,
     refreshToken: authResponse.data.refresh_token,
+    expires: getExpiryISOString(authResponse.data.expires_in),
   };
 }
 
@@ -291,4 +312,13 @@ async function addTracksToPlaylistRecord(playlistId: string, tracks: Track[]): P
   const currentTracks = playlistDocument.data().tracks;
   const newTrackUris = currentTracks.concat(tracks.map((track: Track) => track.uri));
   await db.collection('playlist').doc(playlistDocument.id).set({...playlistDocument.data(), tracks: newTrackUris});
+}
+
+/*
+ * UTILS
+ */
+function getExpiryISOString(expiresIn: number): string {
+  const expiry = new Date();
+  expiry.setTime((new Date()).getTime() + expiresIn * 1000);
+  return expiry.toISOString();
 }

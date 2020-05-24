@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
+import { map, take } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,20 +15,23 @@ export class AuthGuard implements CanActivate {
   ) {
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     const url = state.url.includes('?') ? state.url.split('?')[0] : state.url;
     const code = route.queryParamMap.get('code');
     if (this.auth.isAuthenticated()) {
       console.log('authenticated using local token');
-      return true;
+      return of(true);
     }
     if (code) {
-      this.auth.getAuthToken(code, `https://colabdiscover.web.app${url}`).subscribe((token) => {
-        return !!token;
-      });
+      console.log('authenticating using query string code');
+      return this.auth.getAuthToken(code, `https://colabdiscover.web.app${url}`).pipe(
+        map((token) => !!token),
+        take(1)
+      );
     } else {
+      console.log('redirecting to spotify login');
       this.api.goExternalWithSpotifyLogin(`https://colabdiscover.web.app${url}`);
-      return false;
+      return of(false);
     }
   }
 }
