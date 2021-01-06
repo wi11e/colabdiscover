@@ -4,7 +4,7 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "cors": "^2.8.5",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.1",
     "querystring": "^0.2.0"
